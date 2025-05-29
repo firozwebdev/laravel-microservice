@@ -1,0 +1,60 @@
+version: "3.8"
+
+services:
+  # Gateway MySQL
+  mysql_gateway:
+    image: mysql:8.0
+    container_name: mysql_gateway
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gateway_db
+      MYSQL_PASSWORD: root
+    ports:
+      - "33061:3306"
+    volumes:
+      - mysql_gateway_data:/var/lib/mysql
+
+  # User-service MySQL
+  mysql_user:
+    image: mysql:8.0
+    container_name: mysql_user
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: user_service_db
+      MYSQL_PASSWORD: root
+    ports:
+      - "33062:3306"
+    volumes:
+      - mysql_user_data:/var/lib/mysql
+
+  # Product-service MySQL
+  mysql_product:
+    image: mysql:8.0
+    container_name: mysql_product
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: product_service_db
+      MYSQL_PASSWORD: root
+    ports:
+      - "33063:3306"
+    volumes:
+      - mysql_product_data:/var/lib/mysql
+
+  # Redis (shared cache/queue)
+  redis:
+    image: redis:7.0
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  mysql_gateway_data:
+  mysql_user_data:
+  mysql_product_data:
+  redis_data:
