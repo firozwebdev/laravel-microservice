@@ -1,7 +1,60 @@
 version: "3.8"
 
 services:
-  # Gateway MySQL
+  # =======================
+  # GATEWAY Laravel Service
+  # =======================
+  gateway:
+    build:
+      context: ./gateway
+    container_name: gateway
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./gateway:/var/www/html
+    working_dir: /var/www/html
+    depends_on:
+      - mysql_gateway
+    command: php artisan serve --host=0.0.0.0 --port=8000
+
+  # ============================
+  # USER SERVICE Laravel Service
+  # ============================
+  user_service:
+    build:
+      context: ./user-service
+    container_name: user_service
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./user-service:/var/www/html
+    working_dir: /var/www/html
+    depends_on:
+      - mysql_user
+    command: php artisan serve --host=0.0.0.0 --port=8000
+
+  # ===============================
+  # PRODUCT SERVICE Laravel Service
+  # ===============================
+  product_service:
+    build:
+      context: ./product-service
+    container_name: product_service
+    restart: unless-stopped
+    ports:
+      - "8002:8000"
+    volumes:
+      - ./product-service:/var/www/html
+    working_dir: /var/www/html
+    depends_on:
+      - mysql_product
+    command: php artisan serve --host=0.0.0.0 --port=8000
+
+  # ==========
+  # MySQLs
+  # ==========
   mysql_gateway:
     image: mysql:8.0
     container_name: mysql_gateway
@@ -15,7 +68,6 @@ services:
     volumes:
       - mysql_gateway_data:/var/lib/mysql
 
-  # User-service MySQL
   mysql_user:
     image: mysql:8.0
     container_name: mysql_user
@@ -29,7 +81,6 @@ services:
     volumes:
       - mysql_user_data:/var/lib/mysql
 
-  # Product-service MySQL
   mysql_product:
     image: mysql:8.0
     container_name: mysql_product
@@ -43,7 +94,9 @@ services:
     volumes:
       - mysql_product_data:/var/lib/mysql
 
-  # Redis (shared cache/queue)
+  # ==========
+  # Redis
+  # ==========
   redis:
     image: redis:7.0
     container_name: redis
