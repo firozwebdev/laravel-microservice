@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
+use App\Jobs\TestJob;
 
 
 
@@ -25,6 +26,10 @@ Route::middleware('auth:api')->get('/products', function (Request $request) {
 // });
 
 
+Route::get('/test-queue', function () {
+    TestJob::dispatch();
+    return response()->json(['status' => 'queued']);
+});
 Route::middleware('auth:api')->get('/me', function (Request $request) {
     return $request->user(); // or call user-service endpoint
 });
